@@ -1,27 +1,38 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+    <!-- 设置页面字符编码为UTF-8 -->
     <meta charset="UTF-8">
+    <!-- 设置视口，确保页面在移动设备上正确显示 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 页面标题 -->
     <title>双蛇对战 🐍🐍</title>
+    <!-- 引入外部CSS样式表 -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+    <!-- 游戏主容器 -->
     <div class="game-container">
+        <!-- 游戏标题 -->
         <h1 class="game-title">双蛇对战 🐍🐍</h1>
         
+        <!-- 分数显示区域 -->
         <div class="scores-container">
+            <!-- 玩家1分数卡片 -->
             <div class="score-card player1">
                 <span class="player-label">玩家 1 (绿)</span>
                 <span class="score" id="score1">0</span>
             </div>
+            <!-- 玩家2分数卡片 -->
             <div class="score-card player2">
                 <span class="player-label">玩家 2 (红)</span>
                 <span class="score" id="score2">0</span>
             </div>
         </div>
         
+        <!-- 游戏画面和控制说明区域 -->
         <div class="game-wrapper">
+            <!-- 玩家1控制说明 -->
             <div class="controls-info left">
                 <h3>玩家 1 控制</h3>
                 <div class="key-grid">
@@ -34,8 +45,10 @@
                 </div>
             </div>
             
+            <!-- 游戏画布，用于绘制游戏画面 -->
             <canvas id="gameCanvas" width="800" height="600"></canvas>
             
+            <!-- 玩家2控制说明 -->
             <div class="controls-info right">
                 <h3>玩家 2 控制</h3>
                 <div class="key-grid">
@@ -49,8 +62,10 @@
             </div>
         </div>
         
+        <!-- 游戏状态显示 -->
         <div class="game-status" id="gameStatus">按开始游戏来挑战！</div>
         
+        <!-- 游戏控制按钮区域 -->
         <div class="buttons-container">
             <button id="startBtn" class="game-btn start-btn">开始游戏</button>
             <button id="pauseBtn" class="game-btn pause-btn">暂停</button>
@@ -58,6 +73,7 @@
         </div>
     </div>
     
+    <!-- 引入游戏逻辑JavaScript文件 -->
     <script src="js/game.js"></script>
 </body>
 </html>
