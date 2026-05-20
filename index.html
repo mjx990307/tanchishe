@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>贪吃蛇游戏</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="game-container">
+        <h1 class="game-title">🐍 贪吃蛇游戏</h1>
+        
+        <div class="score-panel">
+            <div class="score-item">
+                <span class="score-label">当前分数</span>
+                <span class="score-value" id="currentScore">0</span>
+            </div>
+            <div class="score-item">
+                <span class="score-label">最高分</span>
+                <span class="score-value" id="highScore">0</span>
+            </div>
+        </div>
+        
+        <div class="canvas-wrapper">
+            <canvas id="gameCanvas"></canvas>
+            <div id="gameOverlay" class="game-overlay hidden">
+                <div class="overlay-content">
+                    <h2 id="overlayTitle">游戏结束</h2>
+                    <p id="overlayMessage">点击重新开始</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="control-panel">
+            <button id="startBtn" class="btn btn-primary">开始游戏</button>
+            <button id="pauseBtn" class="btn btn-secondary" disabled>暂停</button>
+            <button id="resetBtn" class="btn btn-danger">重新开始</button>
+        </div>
+        
+        <div class="instructions">
+            <h3>🎮 操作说明</h3>
+            <div class="instruction-grid">
+                <div class="instruction-item">
+                    <span class="key">↑</span>
+                    <span class="key">W</span>
+                    <span>向上移动</span>
+                </div>
+                <div class="instruction-item">
+                    <span class="key">↓</span>
+                    <span class="key">S</span>
+                    <span>向下移动</span>
+                </div>
+                <div class="instruction-item">
+                    <span class="key">←</span>
+                    <span class="key">A</span>
+                    <span>向左移动</span>
+                </div>
+                <div class="instruction-item">
+                    <span class="key">→</span>
+                    <span class="key">D</span>
+                    <span>向右移动</span>
+                </div>
+                <div class="instruction-item">
+                    <span class="key">空格</span>
+                    <span>暂停/继续</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/game.js"></script>
+</body>
+</html>
