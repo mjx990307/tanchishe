@@ -1,111 +1,57 @@
-# 贪吃蛇游戏 (Tanchishe)
+# React + TypeScript + Vite
 
-一个经典的贪吃蛇小游戏项目，使用现代 Web 技术实现。
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## 项目简介
+Currently, two official plugins are available:
 
-这是一个经典的贪吃蛇游戏项目，旨在提供流畅的游戏体验和美观的用户界面。玩家通过控制蛇的移动来吃食物，每吃到一个食物蛇身会变长，同时分数增加。游戏包含碰撞检测、分数统计、暂停/继续等功能。
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## 功能特性
+## Expanding the ESLint configuration
 
-- 🎮 经典贪吃蛇游戏体验
-- ⬆️⬇️⬅️➡️ 键盘方向键控制
-- 📊 实时分数统计
-- ⏸️ 游戏暂停和继续功能
-- 🔄 游戏重新开始
-- 🎨 现代化的 UI 界面
-- 📱 响应式设计，支持多种设备
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-## 技术栈
-
-- HTML5 Canvas 用于游戏渲染
-- JavaScript 用于游戏逻辑
-- CSS3 用于样式设计
-
-## 安装和运行
-
-### 1. 克隆项目
-
-```bash
-git clone <repository-url>
-cd tanchishe
+```js
+export default tseslint.config({
+  extends: [
+    // Remove ...tseslint.configs.recommended and replace with this
+    ...tseslint.configs.recommendedTypeChecked,
+    // Alternatively, use this for stricter rules
+    ...tseslint.configs.strictTypeChecked,
+    // Optionally, add this for stylistic rules
+    ...tseslint.configs.stylisticTypeChecked,
+  ],
+  languageOptions: {
+    // other options...
+    parserOptions: {
+      project: ['./tsconfig.node.json', './tsconfig.app.json'],
+      tsconfigRootDir: import.meta.dirname,
+    },
+  },
+})
 ```
 
-### 2. 运行游戏
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
 
-直接在浏览器中打开 `index.html` 文件即可运行游戏，或者使用本地服务器：
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
 
-```bash
-# 使用 Python
-python3 -m http.server 8000
-
-# 使用 Node.js (http-server)
-npx http-server
+export default tseslint.config({
+  extends: [
+    // other configs...
+    // Enable lint rules for React
+    reactX.configs['recommended-typescript'],
+    // Enable lint rules for React DOM
+    reactDom.configs.recommended,
+  ],
+  languageOptions: {
+    // other options...
+    parserOptions: {
+      project: ['./tsconfig.node.json', './tsconfig.app.json'],
+      tsconfigRootDir: import.meta.dirname,
+    },
+  },
+})
 ```
-
-然后在浏览器中访问 `http://localhost:8000`
-
-## 游戏说明
-
-### 操作方式
-
-- **↑** / **W** - 向上移动
-- **↓** / **S** - 向下移动
-- **←** / **A** - 向左移动
-- **→** / **D** - 向右移动
-- **空格键** - 暂停/继续游戏
-- **R** 键 - 重新开始游戏
-
-### 游戏规则
-
-1. 控制蛇吃红色的食物来增长身体和获得分数
-2. 每吃一个食物，分数 +10，蛇身变长
-3. 游戏结束条件：
-   - 蛇头撞到墙壁
-   - 蛇头撞到自己的身体
-4. 挑战最高分记录！
-
-## 项目结构
-
-```
-tanchishe/
-├── index.html          # 主 HTML 文件
-├── css/
-│   └── style.css       # 样式文件
-├── js/
-│   └── game.js         # 游戏逻辑文件
-├── assets/             # 资源文件夹
-│   └── images/         # 图片资源
-└── README.md           # 项目文档
-```
-
-## 开发计划
-
-- [x] 实现基础的贪吃蛇移动、进食和碰撞逻辑
-- [x] 增加分数统计
-- [x] 支持游戏暂停和重新开始
-- [x] 优化界面和交互体验
-- [ ] 添加不同难度级别
-- [ ] 增加最高分记录功能
-- [ ] 添加音效和背景音乐
-- [ ] 支持触摸操作（移动端优化）
-- [ ] 添加游戏设置选项
-
-## 贡献指南
-
-欢迎提交 Issue 和 Pull Request！
-
-1. Fork 本仓库
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 开启 Pull Request
-
-## 许可证
-
-本项目采用 MIT 许可证 - 详见 [LICENSE](LICENSE) 文件
-
----
-
-享受游戏！🐍
-
