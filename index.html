@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>双蛇对战 🐍🐍</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="game-container">
+        <h1 class="game-title">双蛇对战 🐍🐍</h1>
+        
+        <div class="scores-container">
+            <div class="score-card player1">
+                <span class="player-label">玩家 1 (绿)</span>
+                <span class="score" id="score1">0</span>
+            </div>
+            <div class="score-card player2">
+                <span class="player-label">玩家 2 (红)</span>
+                <span class="score" id="score2">0</span>
+            </div>
+        </div>
+        
+        <div class="game-wrapper">
+            <div class="controls-info left">
+                <h3>玩家 1 控制</h3>
+                <div class="key-grid">
+                    <div class="key">W</div>
+                    <div class="key-row">
+                        <div class="key">A</div>
+                        <div class="key">S</div>
+                        <div class="key">D</div>
+                    </div>
+                </div>
+            </div>
+            
+            <canvas id="gameCanvas" width="800" height="600"></canvas>
+            
+            <div class="controls-info right">
+                <h3>玩家 2 控制</h3>
+                <div class="key-grid">
+                    <div class="key">↑</div>
+                    <div class="key-row">
+                        <div class="key">←</div>
+                        <div class="key">↓</div>
+                        <div class="key">→</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="game-status" id="gameStatus">按开始游戏来挑战！</div>
+        
+        <div class="buttons-container">
+            <button id="startBtn" class="game-btn start-btn">开始游戏</button>
+            <button id="pauseBtn" class="game-btn pause-btn">暂停</button>
+            <button id="restartBtn" class="game-btn restart-btn">重新开始</button>
+        </div>
+    </div>
+    
+    <script src="js/game.js"></script>
+</body>
+</html>
