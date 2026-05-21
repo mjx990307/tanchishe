@@ -50,13 +50,60 @@ let snake2 = {
 };
 
 /**
+ * 食物类型常量
+ */
+const FOOD_TYPES = {
+    NORMAL: 'normal',      // 普通食物（金色）
+    SPEED_UP: 'speed_up',  // 加速食物（蓝色）- 让自己移动更快
+    SLOW_DOWN: 'slow_down',// 减速食物（紫色）- 让对方移动变慢
+    SHORTEN: 'shorten'     // 缩短食物（红色）- 让对方蛇身缩短
+};
+
+/**
  * 食物的数据结构
  */
 let food = {
     x: Math.floor(gridWidth / 2), // 食物的x坐标
     y: Math.floor(gridHeight / 2), // 食物的y坐标
-    color: '#fbbf24' // 食物的颜色（金色）
+    type: FOOD_TYPES.NORMAL, // 食物类型
+    color: '#fbbf24' // 食物的颜色
 };
+
+/**
+ * 获取食物颜色
+ * @param {string} type - 食物类型
+ * @returns {string} 对应的颜色
+ */
+function getFoodColor(type) {
+    switch (type) {
+        case FOOD_TYPES.SPEED_UP:
+            return '#60a5fa'; // 蓝色
+        case FOOD_TYPES.SLOW_DOWN:
+            return '#a78bfa'; // 紫色
+        case FOOD_TYPES.SHORTEN:
+            return '#fb7185'; // 粉红色
+        default:
+            return '#fbbf24'; // 金色（普通食物）
+    }
+}
+
+/**
+ * 获取食物显示符号
+ * @param {string} type - 食物类型
+ * @returns {string} 显示符号
+ */
+function getFoodSymbol(type) {
+    switch (type) {
+        case FOOD_TYPES.SPEED_UP:
+            return '⚡';
+        case FOOD_TYPES.SLOW_DOWN:
+            return '🐢';
+        case FOOD_TYPES.SHORTEN:
+            return '✂️';
+        default:
+            return '';
+    }
+}
 
 // 游戏循环计时器
 let gameLoop = null;
@@ -97,8 +144,20 @@ function initGame() {
         paused: false,
         score1: 0,
         score2: 0,
-        winner: null
+        winner: null,
+        speed1: 1,
+        speed2: 1
     };
+    
+    // 清除速度效果计时器
+    if (gameState.speedTimer1) {
+        clearTimeout(gameState.speedTimer1);
+        gameState.speedTimer1 = null;
+    }
+    if (gameState.speedTimer2) {
+        clearTimeout(gameState.speedTimer2);
+        gameState.speedTimer2 = null;
+    }
 
     // 更新UI显示
     updateScores();
@@ -141,6 +200,22 @@ function generateFood() {
             }
         }
     }
+    
+    // 随机选择食物类型
+    // 普通食物70%概率，特殊食物各10%概率
+    const rand = Math.random();
+    if (rand < 0.7) {
+        food.type = FOOD_TYPES.NORMAL;
+    } else if (rand < 0.8) {
+        food.type = FOOD_TYPES.SPEED_UP;
+    } else if (rand < 0.9) {
+        food.type = FOOD_TYPES.SLOW_DOWN;
+    } else {
+        food.type = FOOD_TYPES.SHORTEN;
+    }
+    
+    // 设置食物颜色
+    food.color = getFoodColor(food.type);
 }
 
 /**
@@ -173,7 +248,7 @@ function draw() {
     }
     
     // 绘制食物
-    drawSegment(food.x, food.y, food.color, true);
+    drawFood();
     
     // 绘制蛇1的身体
     snake1.body.forEach((segment, index) => {
@@ -225,6 +300,57 @@ function drawSegment(x, y, color, isHead) {
             y * gridSize + eyeOffset,
             eyeSize,
             eyeSize
+        );
+    }
+}
+
+/**
+ * 绘制食物
+ */
+function drawFood() {
+    const padding = 1;
+    const x = food.x;
+    const y = food.y;
+    
+    // 绘制食物主体（圆形）
+    ctx.fillStyle = food.color;
+    ctx.beginPath();
+    ctx.arc(
+        x * gridSize + gridSize / 2,
+        y * gridSize + gridSize / 2,
+        gridSize / 2 - padding,
+        0,
+        Math.PI * 2
+    );
+    ctx.fill();
+    
+    // 为特殊食物添加发光效果
+    if (food.type !== FOOD_TYPES.NORMAL) {
+        ctx.shadowColor = food.color;
+        ctx.shadowBlur = 10;
+        ctx.beginPath();
+        ctx.arc(
+            x * gridSize + gridSize / 2,
+            y * gridSize + gridSize / 2,
+            gridSize / 2 - padding,
+            0,
+            Math.PI * 2
+        );
+        ctx.fill();
+        ctx.shadowBlur = 0;
+    }
+    
+    // 绘制食物符号
+    const symbol = getFoodSymbol(food.type);
+    if (symbol) {
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '14px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(
+            symbol,
+            x * gridSize + gridSize / 2,
+            y * gridSize + gridSize / 2
         );
     }
 }
@@ -303,14 +429,50 @@ function checkCollision(snake, otherSnake) {
  */
 function checkEatFood(snake, player) {
     const head = snake.body[0]; // 获取蛇头
+    const otherPlayer = player === 1 ? 2 : 1;
     
     // 检查蛇头是否和食物位置重合
     if (head.x === food.x && head.y === food.y) {
-        // 更新对应玩家的分数
-        if (player === 1) {
-            gameState.score1 += 10;
-        } else {
-            gameState.score2 += 10;
+        // 根据食物类型处理效果
+        switch (food.type) {
+            case FOOD_TYPES.NORMAL:
+                // 普通食物：+10分
+                if (player === 1) {
+                    gameState.score1 += 10;
+                } else {
+                    gameState.score2 += 10;
+                }
+                break;
+                
+            case FOOD_TYPES.SPEED_UP:
+                // 加速食物：让自己速度提升50%，持续5秒
+                applySpeedBoost(player, 0.5, 5000);
+                if (player === 1) {
+                    gameState.score1 += 5;
+                } else {
+                    gameState.score2 += 5;
+                }
+                break;
+                
+            case FOOD_TYPES.SLOW_DOWN:
+                // 减速食物：让对方速度降低50%，持续5秒
+                applySlowEffect(otherPlayer, 0.5, 5000);
+                if (player === 1) {
+                    gameState.score1 += 5;
+                } else {
+                    gameState.score2 += 5;
+                }
+                break;
+                
+            case FOOD_TYPES.SHORTEN:
+                // 缩短食物：让对方蛇身缩短3段
+                shortenSnake(otherPlayer);
+                if (player === 1) {
+                    gameState.score1 += 15;
+                } else {
+                    gameState.score2 += 15;
+                }
+                break;
         }
         
         // 更新分数显示，生成新食物
@@ -320,6 +482,60 @@ function checkEatFood(snake, player) {
     }
     
     return false;
+}
+
+/**
+ * 应用速度提升效果
+ * @param {number} player - 玩家编号
+ * @param {number} factor - 速度提升因子（0.5表示提升50%）
+ * @param {number} duration - 持续时间（毫秒）
+ */
+function applySpeedBoost(player, factor, duration) {
+    const targetSnake = player === 1 ? snake1 : snake2;
+    const currentSpeed = gameState[`speed${player}`] || 1;
+    gameState[`speed${player}`] = currentSpeed * (1 + factor);
+    
+    // 设置效果结束计时器
+    if (gameState[`speedTimer${player}`]) {
+        clearTimeout(gameState[`speedTimer${player}`]);
+    }
+    gameState[`speedTimer${player}`] = setTimeout(() => {
+        gameState[`speed${player}`] = 1;
+        gameState[`speedTimer${player}`] = null;
+    }, duration);
+}
+
+/**
+ * 应用减速效果
+ * @param {number} player - 玩家编号
+ * @param {number} factor - 减速因子（0.5表示降低50%）
+ * @param {number} duration - 持续时间（毫秒）
+ */
+function applySlowEffect(player, factor, duration) {
+    const currentSpeed = gameState[`speed${player}`] || 1;
+    gameState[`speed${player}`] = Math.max(0.3, currentSpeed * (1 - factor));
+    
+    // 设置效果结束计时器
+    if (gameState[`speedTimer${player}`]) {
+        clearTimeout(gameState[`speedTimer${player}`]);
+    }
+    gameState[`speedTimer${player}`] = setTimeout(() => {
+        gameState[`speed${player}`] = 1;
+        gameState[`speedTimer${player}`] = null;
+    }, duration);
+}
+
+/**
+ * 缩短对方蛇身
+ * @param {number} player - 玩家编号
+ */
+function shortenSnake(player) {
+    const targetSnake = player === 1 ? snake1 : snake2;
+    // 确保蛇至少保留3段（蛇头+2节身体）
+    const segmentsToRemove = Math.min(3, targetSnake.body.length - 3);
+    for (let i = 0; i < segmentsToRemove; i++) {
+        targetSnake.body.pop();
+    }
 }
 
 /**
@@ -339,25 +555,46 @@ function updateScores() {
  * 3. 检查碰撞
  * 4. 重新绘制画面
  */
+// 帧计数器，用于实现不同速度
+let frameCount = 0;
+
 function update() {
     // 如果游戏未运行或已暂停，不执行更新
     if (!gameState.running || gameState.paused) return;
     
-    // 移动两条蛇
-    const head1 = moveSnake(snake1);
-    const head2 = moveSnake(snake2);
+    frameCount++;
     
-    // 检查两条蛇是否吃到食物
-    const ate1 = checkEatFood(snake1, 1);
-    const ate2 = checkEatFood(snake2, 2);
+    // 获取玩家速度（默认为1）
+    const speed1 = gameState.speed1 || 1;
+    const speed2 = gameState.speed2 || 1;
     
-    // 如果没吃到食物，移除蛇的尾部（保持长度不变）
-    // 如果吃到食物，不移除尾部（蛇身变长）
-    if (!ate1) {
-        snake1.body.pop();
+    // 根据速度计算每条蛇应该移动的帧间隔
+    const snake1MoveInterval = Math.max(1, Math.round(1 / speed1));
+    const snake2MoveInterval = Math.max(1, Math.round(1 / speed2));
+    
+    let head1 = null;
+    let head2 = null;
+    let ate1 = false;
+    let ate2 = false;
+    
+    // 蛇1移动逻辑
+    if (frameCount % snake1MoveInterval === 0) {
+        head1 = moveSnake(snake1);
+        ate1 = checkEatFood(snake1, 1);
+        
+        if (!ate1) {
+            snake1.body.pop();
+        }
     }
-    if (!ate2) {
-        snake2.body.pop();
+    
+    // 蛇2移动逻辑
+    if (frameCount % snake2MoveInterval === 0) {
+        head2 = moveSnake(snake2);
+        ate2 = checkEatFood(snake2, 2);
+        
+        if (!ate2) {
+            snake2.body.pop();
+        }
     }
     
     // 检查碰撞
