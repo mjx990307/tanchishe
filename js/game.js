@@ -173,17 +173,58 @@ function draw() {
     }
     
     // 绘制食物
-    drawSegment(food.x, food.y, food.color, true);
+    drawFood(food.x, food.y);
     
     // 绘制蛇1的身体
     snake1.body.forEach((segment, index) => {
-        drawSegment(segment.x, segment.y, snake1.color, index === 0);
+        drawSegment(segment.x, segment.y, snake1.color, index === 0, snake1, index);
     });
     
     // 绘制蛇2的身体
     snake2.body.forEach((segment, index) => {
-        drawSegment(segment.x, segment.y, snake2.color, index === 0);
+        drawSegment(segment.x, segment.y, snake2.color, index === 0, snake2, index);
     });
+}
+
+/**
+ * 绘制美化后的食物
+ * @param {number} x - 食物的x坐标
+ * @param {number} y - 食物的y坐标
+ */
+function drawFood(x, y) {
+    const centerX = x * gridSize + gridSize / 2;
+    const centerY = y * gridSize + gridSize / 2;
+    const radius = gridSize / 2 - 3;
+    
+    // 绘制食物的发光效果
+    ctx.shadowColor = '#fbbf24';
+    ctx.shadowBlur = 20;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+    
+    // 绘制食物主体（圆形）
+    let foodGradient = ctx.createRadialGradient(
+        centerX - 3, centerY - 3, 0,
+        centerX, centerY, radius
+    );
+    foodGradient.addColorStop(0, '#fef3c7');
+    foodGradient.addColorStop(0.5, '#fbbf24');
+    foodGradient.addColorStop(1, '#f59e0b');
+    
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+    ctx.fillStyle = foodGradient;
+    ctx.fill();
+    
+    // 重置阴影
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    
+    // 添加一些高光效果
+    ctx.beginPath();
+    ctx.arc(centerX - 3, centerY - 3, 4, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+    ctx.fill();
 }
 
 /**
@@ -191,42 +232,132 @@ function draw() {
  * @param {number} x - 格子的x坐标（网格坐标）
  * @param {number} y - 格子的y坐标（网格坐标）
  * @param {string} color - 格子的颜色
- * @param {boolean} isHead - 是否是蛇头（如果是，会绘制眼睛）
+ * @param {boolean} isHead - 是否是蛇头
+ * @param {object} snake - 蛇对象（用于获取方向）
+ * @param {number} index - 身体段的索引（用于渐变）
  */
-function drawSegment(x, y, color, isHead) {
-    const padding = 1; // 格子之间的间距
+function drawSegment(x, y, color, isHead, snake, index) {
+    const padding = 2;
+    const segmentSize = gridSize - padding * 2;
+    const centerX = x * gridSize + gridSize / 2;
+    const centerY = y * gridSize + gridSize / 2;
     
-    // 绘制格子主体
-    ctx.fillStyle = color;
-    ctx.fillRect(
-        x * gridSize + padding,
-        y * gridSize + padding,
-        gridSize - padding * 2,
-        gridSize - padding * 2
+    // 创建渐变效果
+    let gradient = ctx.createRadialGradient(
+        centerX - 2, centerY - 2, 0,
+        centerX, centerY, segmentSize / 2
     );
     
-    // 如果是蛇头，添加眼睛
-    if (isHead) {
-        ctx.fillStyle = '#000000'; // 眼睛颜色（黑色）
-        const eyeSize = 3;
-        const eyeOffset = 5;
-        
-        // 左眼
-        ctx.fillRect(
-            x * gridSize + eyeOffset,
-            y * gridSize + eyeOffset,
-            eyeSize,
-            eyeSize
-        );
-        
-        // 右眼
-        ctx.fillRect(
-            x * gridSize + gridSize - eyeOffset - eyeSize,
-            y * gridSize + eyeOffset,
-            eyeSize,
-            eyeSize
-        );
+    // 根据颜色设置渐变
+    if (color === '#4ade80') {
+        // 绿色蛇渐变
+        gradient.addColorStop(0, '#86efac');
+        gradient.addColorStop(0.5, '#4ade80');
+        gradient.addColorStop(1, '#22c55e');
+    } else if (color === '#f87171') {
+        // 红色蛇渐变
+        gradient.addColorStop(0, '#fca5a5');
+        gradient.addColorStop(0.5, '#f87171');
+        gradient.addColorStop(1, '#ef4444');
+    } else if (color === '#fbbf24') {
+        // 食物渐变
+        gradient.addColorStop(0, '#fde68a');
+        gradient.addColorStop(0.5, '#fbbf24');
+        gradient.addColorStop(1, '#f59e0b');
+    } else {
+        gradient.addColorStop(0, color);
+        gradient.addColorStop(1, color);
     }
+    
+    // 绘制圆角矩形
+    ctx.beginPath();
+    ctx.roundRect(
+        x * gridSize + padding,
+        y * gridSize + padding,
+        segmentSize,
+        segmentSize,
+        6
+    );
+    
+    // 添加发光阴影
+    ctx.shadowColor = color;
+    ctx.shadowBlur = isHead ? 15 : 8;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+    
+    ctx.fillStyle = gradient;
+    ctx.fill();
+    
+    // 重置阴影
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    
+    // 如果是蛇头，添加更可爱的眼睛
+    if (isHead) {
+        drawSnakeHead(x, y, snake);
+    }
+}
+
+/**
+ * 绘制蛇头，包含可爱的眼睛
+ * @param {number} x - 格子的x坐标
+ * @param {number} y - 格子的y坐标
+ * @param {object} snake - 蛇对象
+ */
+function drawSnakeHead(x, y, snake) {
+    const centerX = x * gridSize + gridSize / 2;
+    const centerY = y * gridSize + gridSize / 2;
+    const eyeRadius = 3;
+    const pupilRadius = 1.5;
+    let eyeOffsetX = 5;
+    let eyeOffsetY = 4;
+    
+    // 根据方向调整眼睛位置
+    switch(snake.direction) {
+        case 'up':
+            eyeOffsetY = 3;
+            break;
+        case 'down':
+            eyeOffsetY = 6;
+            break;
+        case 'left':
+            eyeOffsetX = 3;
+            break;
+        case 'right':
+            eyeOffsetX = 7;
+            break;
+    }
+    
+    // 左眼
+    ctx.beginPath();
+    ctx.arc(centerX - 5, centerY - eyeOffsetY, eyeRadius, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+    
+    // 左瞳孔
+    ctx.beginPath();
+    ctx.arc(centerX - 5, centerY - eyeOffsetY, pupilRadius, 0, Math.PI * 2);
+    ctx.fillStyle = '#000000';
+    ctx.fill();
+    
+    // 右眼
+    ctx.beginPath();
+    ctx.arc(centerX + 5, centerY - eyeOffsetY, eyeRadius, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+    
+    // 右瞳孔
+    ctx.beginPath();
+    ctx.arc(centerX + 5, centerY - eyeOffsetY, pupilRadius, 0, Math.PI * 2);
+    ctx.fillStyle = '#000000';
+    ctx.fill();
+    
+    // 绘制小嘴巴
+    ctx.beginPath();
+    ctx.arc(centerX, centerY + 3, 2, 0, Math.PI);
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
 }
 
 /**
