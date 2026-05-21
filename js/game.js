@@ -36,7 +36,8 @@ let snake1 = {
     body: [{ x: 5, y: Math.floor(gridHeight / 2) }], // 蛇身体的坐标数组，第一个元素是蛇头
     direction: 'right', // 当前移动方向
     nextDirection: 'right', // 下一步的移动方向（防止快速按键导致蛇自己撞到自己）
-    color: '#4ade80' // 蛇的颜色
+    color: '#4ade80', // 蛇的颜色
+    pendingGrowth: 0 // 待增长段数
 };
 
 /**
@@ -46,7 +47,8 @@ let snake2 = {
     body: [{ x: gridWidth - 6, y: Math.floor(gridHeight / 2) }],
     direction: 'left',
     nextDirection: 'left',
-    color: '#f87171'
+    color: '#f87171',
+    pendingGrowth: 0
 };
 
 /**
@@ -61,6 +63,7 @@ let food = {
 // 游戏循环计时器
 let gameLoop = null;
 const gameSpeed = 100; // 游戏更新间隔，单位毫秒（100ms = 10帧/秒）
+const growthPerFood = 2; // 每次吃到食物额外增长的身体段数
 
 // 获取DOM元素引用，用于更新UI
 const score1El = document.getElementById('score1'); // 玩家1分数显示
@@ -80,7 +83,8 @@ function initGame() {
         body: [{ x: 5, y: Math.floor(gridHeight / 2) }],
         direction: 'right',
         nextDirection: 'right',
-        color: '#4ade80'
+        color: '#4ade80',
+        pendingGrowth: 0
     };
 
     // 重置蛇2（玩家2）
@@ -88,7 +92,8 @@ function initGame() {
         body: [{ x: gridWidth - 6, y: Math.floor(gridHeight / 2) }],
         direction: 'left',
         nextDirection: 'left',
-        color: '#f87171'
+        color: '#f87171',
+        pendingGrowth: 0
     };
 
     // 重置游戏状态
@@ -313,6 +318,9 @@ function checkEatFood(snake, player) {
             gameState.score2 += 10;
         }
         
+        // 吃到食物后，设置待增长段数（下一些移动中逐步生效）
+        snake.pendingGrowth += growthPerFood;
+
         // 更新分数显示，生成新食物
         updateScores();
         generateFood();
@@ -354,10 +362,18 @@ function update() {
     // 如果没吃到食物，移除蛇的尾部（保持长度不变）
     // 如果吃到食物，不移除尾部（蛇身变长）
     if (!ate1) {
-        snake1.body.pop();
+        if (snake1.pendingGrowth > 0) {
+            snake1.pendingGrowth--;
+        } else {
+            snake1.body.pop();
+        }
     }
     if (!ate2) {
-        snake2.body.pop();
+        if (snake2.pendingGrowth > 0) {
+            snake2.pendingGrowth--;
+        } else {
+            snake2.body.pop();
+        }
     }
     
     // 检查碰撞
