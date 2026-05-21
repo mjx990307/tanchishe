@@ -173,60 +173,105 @@ function draw() {
     }
     
     // 绘制食物
-    drawSegment(food.x, food.y, food.color, true);
+    drawFood(food.x, food.y, food.color);
     
     // 绘制蛇1的身体
     snake1.body.forEach((segment, index) => {
-        drawSegment(segment.x, segment.y, snake1.color, index === 0);
+        drawSnakeSegment(segment.x, segment.y, snake1, index);
     });
     
     // 绘制蛇2的身体
     snake2.body.forEach((segment, index) => {
-        drawSegment(segment.x, segment.y, snake2.color, index === 0);
+        drawSnakeSegment(segment.x, segment.y, snake2, index);
     });
 }
 
 /**
- * 绘制单个格子（蛇的身体段或食物）
+ * 绘制单个食物格子（圆形糖果风格）
  * @param {number} x - 格子的x坐标（网格坐标）
  * @param {number} y - 格子的y坐标（网格坐标）
  * @param {string} color - 格子的颜色
- * @param {boolean} isHead - 是否是蛇头（如果是，会绘制眼睛）
  */
-function drawSegment(x, y, color, isHead) {
-    const padding = 1; // 格子之间的间距
-    
-    // 绘制格子主体
-    ctx.fillStyle = color;
-    ctx.fillRect(
-        x * gridSize + padding,
-        y * gridSize + padding,
-        gridSize - padding * 2,
-        gridSize - padding * 2
-    );
-    
-    // 如果是蛇头，添加眼睛
-    if (isHead) {
-        ctx.fillStyle = '#000000'; // 眼睛颜色（黑色）
-        const eyeSize = 3;
-        const eyeOffset = 5;
-        
-        // 左眼
-        ctx.fillRect(
-            x * gridSize + eyeOffset,
-            y * gridSize + eyeOffset,
-            eyeSize,
-            eyeSize
+function drawFood(x, y, color) {
+    const cx = x * gridSize + gridSize / 2;
+    const cy = y * gridSize + gridSize / 2;
+    const radius = gridSize * 0.38;
+
+    // 食物主体
+    const foodGradient = ctx.createRadialGradient(cx - 3, cy - 3, 2, cx, cy, radius);
+    foodGradient.addColorStop(0, '#fde68a');
+    foodGradient.addColorStop(1, color);
+    ctx.fillStyle = foodGradient;
+    ctx.beginPath();
+    ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 高光
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.65)';
+    ctx.beginPath();
+    ctx.arc(cx - 4, cy - 4, 3, 0, Math.PI * 2);
+    ctx.fill();
+}
+
+/**
+ * 绘制蛇的单个身体段（带圆角和渐变）
+ * @param {number} x - 格子的x坐标（网格坐标）
+ * @param {number} y - 格子的y坐标（网格坐标）
+ * @param {object} snake - 蛇对象
+ * @param {number} index - 当前段的索引（0为蛇头）
+ */
+function drawSnakeSegment(x, y, snake, index) {
+    const isHead = index === 0;
+    const padding = isHead ? 1 : 2;
+    const segmentX = x * gridSize + padding;
+    const segmentY = y * gridSize + padding;
+    const segmentSize = gridSize - padding * 2;
+    const radius = isHead ? 6 : 5;
+
+    // 圆角蛇身
+    ctx.beginPath();
+    ctx.roundRect(segmentX, segmentY, segmentSize, segmentSize, radius);
+
+    // 渐变颜色
+    const gradient = ctx.createLinearGradient(segmentX, segmentY, segmentX + segmentSize, segmentY + segmentSize);
+    gradient.addColorStop(0, '#ffffff66');
+    gradient.addColorStop(0.28, snake.color);
+    gradient.addColorStop(1, '#00000044');
+    ctx.fillStyle = gradient;
+    ctx.fill();
+
+    // 身体鳞片纹理
+    if (!isHead) {
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.arc(
+            segmentX + segmentSize / 2,
+            segmentY + segmentSize / 2,
+            segmentSize * 0.22,
+            0,
+            Math.PI * 2
         );
-        
-        // 右眼
-        ctx.fillRect(
-            x * gridSize + gridSize - eyeOffset - eyeSize,
-            y * gridSize + eyeOffset,
-            eyeSize,
-            eyeSize
-        );
+        ctx.stroke();
+        return;
     }
+
+    // 蛇头眼睛
+    const leftEye = { x: segmentX + 5, y: segmentY + 6 };
+    const rightEye = { x: segmentX + segmentSize - 5, y: segmentY + 6 };
+
+    [leftEye, rightEye].forEach((eye) => {
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.arc(eye.x, eye.y, 2.6, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 高光
+        ctx.fillStyle = '#ffffffcc';
+        ctx.beginPath();
+        ctx.arc(eye.x - 1, eye.y - 1, 0.9, 0, Math.PI * 2);
+        ctx.fill();
+    });
 }
 
 /**
