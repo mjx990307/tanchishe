@@ -33,7 +33,13 @@ let gameState = {
  * 蛇1的数据结构（玩家1 - 绿色）
  */
 let snake1 = {
-    body: [{ x: 5, y: Math.floor(gridHeight / 2) }], // 蛇身体的坐标数组，第一个元素是蛇头
+    body: [
+        { x: 5, y: Math.floor(gridHeight / 2) },
+        { x: 4, y: Math.floor(gridHeight / 2) },
+        { x: 3, y: Math.floor(gridHeight / 2) },
+        { x: 2, y: Math.floor(gridHeight / 2) },
+        { x: 1, y: Math.floor(gridHeight / 2) }
+    ], // 蛇身体的坐标数组，第一个元素是蛇头
     direction: 'right', // 当前移动方向
     nextDirection: 'right', // 下一步的移动方向（防止快速按键导致蛇自己撞到自己）
     color: '#4ade80' // 蛇的颜色
@@ -43,7 +49,13 @@ let snake1 = {
  * 蛇2的数据结构（玩家2 - 红色）
  */
 let snake2 = {
-    body: [{ x: gridWidth - 6, y: Math.floor(gridHeight / 2) }],
+    body: [
+        { x: gridWidth - 6, y: Math.floor(gridHeight / 2) },
+        { x: gridWidth - 5, y: Math.floor(gridHeight / 2) },
+        { x: gridWidth - 4, y: Math.floor(gridHeight / 2) },
+        { x: gridWidth - 3, y: Math.floor(gridHeight / 2) },
+        { x: gridWidth - 2, y: Math.floor(gridHeight / 2) }
+    ],
     direction: 'left',
     nextDirection: 'left',
     color: '#f87171'
@@ -77,7 +89,13 @@ const restartBtn = document.getElementById('restartBtn'); // 重新开始按钮
 function initGame() {
     // 重置蛇1（玩家1）
     snake1 = {
-        body: [{ x: 5, y: Math.floor(gridHeight / 2) }],
+        body: [
+            { x: 5, y: Math.floor(gridHeight / 2) },
+            { x: 4, y: Math.floor(gridHeight / 2) },
+            { x: 3, y: Math.floor(gridHeight / 2) },
+            { x: 2, y: Math.floor(gridHeight / 2) },
+            { x: 1, y: Math.floor(gridHeight / 2) }
+        ],
         direction: 'right',
         nextDirection: 'right',
         color: '#4ade80'
@@ -85,7 +103,13 @@ function initGame() {
 
     // 重置蛇2（玩家2）
     snake2 = {
-        body: [{ x: gridWidth - 6, y: Math.floor(gridHeight / 2) }],
+        body: [
+            { x: gridWidth - 6, y: Math.floor(gridHeight / 2) },
+            { x: gridWidth - 5, y: Math.floor(gridHeight / 2) },
+            { x: gridWidth - 4, y: Math.floor(gridHeight / 2) },
+            { x: gridWidth - 3, y: Math.floor(gridHeight / 2) },
+            { x: gridWidth - 2, y: Math.floor(gridHeight / 2) }
+        ],
         direction: 'left',
         nextDirection: 'left',
         color: '#f87171'
