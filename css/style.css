@@ -67,16 +67,16 @@ body {
 
 /* 玩家1分数卡片特定样式 */
 .score-card.player1 {
-    border-color: #4ade80;
-    /* 绿色发光效果 */
-    box-shadow: 0 0 20px rgba(74, 222, 128, 0.3);
+    border-color: #ef4444;
+    /* 红色发光效果 */
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.3);
 }
 
 /* 玩家2分数卡片特定样式 */
 .score-card.player2 {
-    border-color: #f87171;
-    /* 红色发光效果 */
-    box-shadow: 0 0 20px rgba(248, 113, 113, 0.3);
+    border-color: #60a5fa;
+    /* 蓝色发光效果 */
+    box-shadow: 0 0 20px rgba(96, 165, 250, 0.3);
 }
 
 /* 玩家标签样式 */

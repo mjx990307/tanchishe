@@ -30,7 +30,7 @@ let gameState = {
 };
 
 /**
- * 蛇1的数据结构（玩家1 - 绿色）
+ * 蛇1的数据结构（玩家1 - 红色）
  */
 let snake1 = {
     body: [
@@ -42,11 +42,11 @@ let snake1 = {
     ], // 蛇身体的坐标数组，第一个元素是蛇头
     direction: 'right', // 当前移动方向
     nextDirection: 'right', // 下一步的移动方向（防止快速按键导致蛇自己撞到自己）
-    color: '#4ade80' // 蛇的颜色
+    color: '#ef4444' // 蛇的颜色
 };
 
 /**
- * 蛇2的数据结构（玩家2 - 红色）
+ * 蛇2的数据结构（玩家2 - 蓝色）
  */
 let snake2 = {
     body: [
@@ -58,7 +58,7 @@ let snake2 = {
     ],
     direction: 'left',
     nextDirection: 'left',
-    color: '#f87171'
+    color: '#60a5fa'
 };
 
 /**
@@ -98,7 +98,7 @@ function initGame() {
         ],
         direction: 'right',
         nextDirection: 'right',
-        color: '#4ade80'
+        color: '#ef4444'
     };
 
     // 重置蛇2（玩家2）
@@ -112,7 +112,7 @@ function initGame() {
         ],
         direction: 'left',
         nextDirection: 'left',
-        color: '#f87171'
+        color: '#60a5fa'
     };
 
     // 重置游戏状态
@@ -273,16 +273,16 @@ function drawSegment(x, y, color, isHead, snake, index) {
     );
     
     // 根据颜色设置渐变
-    if (color === '#4ade80') {
-        // 绿色蛇渐变
-        gradient.addColorStop(0, '#86efac');
-        gradient.addColorStop(0.5, '#4ade80');
-        gradient.addColorStop(1, '#22c55e');
-    } else if (color === '#f87171') {
+    if (color === '#ef4444') {
         // 红色蛇渐变
         gradient.addColorStop(0, '#fca5a5');
-        gradient.addColorStop(0.5, '#f87171');
-        gradient.addColorStop(1, '#ef4444');
+        gradient.addColorStop(0.5, '#ef4444');
+        gradient.addColorStop(1, '#b91c1c');
+    } else if (color === '#60a5fa') {
+        // 蓝色蛇渐变
+        gradient.addColorStop(0, '#bfdbfe');
+        gradient.addColorStop(0.5, '#60a5fa');
+        gradient.addColorStop(1, '#2563eb');
     } else if (color === '#fbbf24') {
         // 食物渐变
         gradient.addColorStop(0, '#fde68a');
